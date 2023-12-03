@@ -94,6 +94,29 @@ async function run() {
         console.log(result)
     });
 
+    app.get('/comments', async (req, res) => {
+        try {
+            
+            const commentId= req.query.commentId
+           
+
+            const query = {}
+
+            
+            if (commentId) {
+                query.commentId = commentId
+            }
+            
+
+            const cursor = commentCollection.find(query);
+            const result = await cursor.toArray();
+            res.send(result);
+        } catch (error) {
+            console.error('Error fetching assets:', error);
+            res.status(500).send('Internal Server Error');
+        }
+    });
+
 
      
 
