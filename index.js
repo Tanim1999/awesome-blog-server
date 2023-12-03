@@ -31,6 +31,7 @@ async function run() {
     // await client.connect();
 
     const blogCollection = client.db("Awesome-BlogDb").collection("blogs");
+    const commentCollection = client.db("Awesome-BlogDb").collection("comments");
 
     //blogs related api
     app.post('/blogs', async (req, res) => {
@@ -83,7 +84,16 @@ async function run() {
         const result = await blogCollection.findOne(query);
         res.send(result);
     })
-    
+
+
+    // comments related api
+    app.post('/comments', async (req, res) => {
+        const comment = req.body;
+        const result = await commentCollection.insertOne(comment);
+        res.send(result);
+        console.log(result)
+    });
+
 
      
 
