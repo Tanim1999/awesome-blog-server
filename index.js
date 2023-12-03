@@ -40,6 +40,40 @@ async function run() {
         console.log(result)
     });
 
+    app.get('/blogs', async (req, res) => {
+        try {
+            const filter = req.query;
+            const email = req.query.email
+
+            const category = req.query.category
+           
+
+            const query = {}
+
+            if (req.query.search) {
+                query.title = { "$regex": filter.search, "$options": "i" }
+
+            }
+            if (email) {
+                query.email = email
+            }
+
+
+            if (category) {
+                query.category = category
+            }
+            
+
+            const cursor = blogCollection.find(query);
+            const result = await cursor.toArray();
+            res.send(result);
+        } catch (error) {
+            console.error('Error fetching assets:', error);
+            res.status(500).send('Internal Server Error');
+        }
+    });
+    
+
      
 
 
