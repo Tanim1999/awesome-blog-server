@@ -49,6 +49,8 @@ async function run() {
 
                 const category = req.query.category
                 const id = req.query._id
+                const sortDirection = req.query.sort === 'desc' ? -1 : 1;
+                
 
 
                 const query = {}
@@ -68,9 +70,10 @@ async function run() {
                 if (id) {
                     query._id = id
                 }
+                
 
 
-                const cursor = blogCollection.find(query);
+                const cursor = blogCollection.find(query).sort({uploadDate:sortDirection});
                 const result = await cursor.toArray();
                 res.send(result);
             } catch (error) {
@@ -181,14 +184,21 @@ async function run() {
             }
         });
 
+        app.delete('/wishlists/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await wishlistCollection.deleteOne(query);
+            res.send(result);
+        })
+
 
 
 
 
 
         // Send a ping to confirm a successful connection
-        await client.db("admin").command({ ping: 1 });
-        console.log("Pinged your deployment. You successfully connected to MongoDB!");
+        // await client.db("admin").command({ ping: 1 });
+        // console.log("Pinged your deployment. You successfully connected to MongoDB!");
     } finally {
         // Ensures that the client will close when you finish/error
         // await client.close();
