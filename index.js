@@ -32,6 +32,7 @@ async function run() {
 
         const blogCollection = client.db("Awesome-BlogDb").collection("blogs");
         const commentCollection = client.db("Awesome-BlogDb").collection("comments");
+        const wishlistCollection = client.db("Awesome-BlogDb").collection("wishlists");
 
         //blogs related api
         app.post('/blogs', async (req, res) => {
@@ -138,7 +139,47 @@ async function run() {
             }
         });
 
+        // wishlists related api
+        app.post('/wishlists', async (req, res) => {
+            const wishlist = req.body;
 
+            const query = { blogId: wishlist.blogId,email:wishlist.email }
+            const existingWishlist = await wishlistCollection.findOne(query);
+            if (existingWishlist) {
+                return res.send({ message: 'Already wishlisted it', insertedId: null })
+            }
+            const result = await wishlistCollection.insertOne(wishlist);
+            res.send(result);
+        });
+
+        
+
+        app.get('/wishlists', async (req, res) => {
+            try {
+
+                const blogId = req.query.blogId
+                const email = req.query.email
+
+
+                const query = {}
+
+
+                if (blogId) {
+                    query.blogId = blogId
+                }
+                if (email) {
+                    query.email = email
+                }
+
+
+                const cursor = wishlistCollection.find(query);
+                const result = await cursor.toArray();
+                res.send(result);
+            } catch (error) {
+                console.error('Error fetching assets:', error);
+                res.status(500).send('Internal Server Error');
+            }
+        });
 
 
 
